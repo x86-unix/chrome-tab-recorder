@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Audio Recorder",
+  "version": "1.0",
+  "description": "選択したタブの音声を録音する",
+  "permissions": ["tabs"],
+  "action": {
+    "default_title": "Tab Audio Recorder"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
