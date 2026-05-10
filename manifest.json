@@ -5,7 +5,11 @@
   "description": "選択したタブの音声を録音する",
   "permissions": ["tabs"],
   "action": {
-    "default_title": "Tab Audio Recorder"
+    "default_title": "Tab Audio Recorder",
+    "default_icon": "icons/icon-default.png"
+  },
+  "icons": {
+    "48": "icons/icon-default.png"
   },
   "background": {
     "service_worker": "background.js"

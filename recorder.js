@@ -26,7 +26,7 @@ startBtn.addEventListener("click", async () => {
     stream.getVideoTracks().forEach(t => t.stop());
 
     chunks = [];
-    recorder = new MediaRecorder(audioStream, { mimeType: "audio/webm" });
+    recorder = new MediaRecorder(audioStream, { mimeType: "audio/webm; codecs=opus" });
     recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
     recorder.onstop = () => saveFile();
     recorder.start(1000);
@@ -34,6 +34,7 @@ startBtn.addEventListener("click", async () => {
     startBtn.style.display = "none";
     stopBtn.style.display = "block";
     status.textContent = "録音中...";
+    chrome.runtime.sendMessage({ action: "setIcon", recording: true });
   } catch (e) {
     status.textContent = "エラー: " + e.message;
   }
@@ -47,15 +48,16 @@ stopBtn.addEventListener("click", () => {
   stopBtn.style.display = "none";
   startBtn.style.display = "block";
   status.textContent = "保存中...";
+  chrome.runtime.sendMessage({ action: "setIcon", recording: false });
 });
 
 function saveFile() {
-  const blob = new Blob(chunks, { type: "audio/webm" });
+  const blob = new Blob(chunks, { type: "audio/ogg" });
   const url = URL.createObjectURL(blob);
   const ts = new Date().toISOString().replace(/[:.]/g, "-");
   const a = document.createElement("a");
   a.href = url;
-  a.download = `recording-${ts}.webm`;
+  a.download = `recording-${ts}.ogg`;
   a.click();
   status.textContent = "保存しました";
 }
