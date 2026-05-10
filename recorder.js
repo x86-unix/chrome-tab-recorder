@@ -1,6 +1,8 @@
 const startBtn = document.getElementById("start");
 const stopBtn = document.getElementById("stop");
 const status = document.getElementById("status");
+const timeDiv = document.getElementById("time");
+let timerId = null;
 
 let recorder = null;
 let chunks = [];
@@ -34,6 +36,14 @@ startBtn.addEventListener("click", async () => {
     startBtn.style.display = "none";
     stopBtn.style.display = "block";
     status.textContent = "録音中...";
+    const startTime = Date.now();
+    timeDiv.textContent = `開始: ${new Date(startTime).toLocaleTimeString()} | 経過: 00:00`;
+    timerId = setInterval(() => {
+      const s = Math.floor((Date.now() - startTime) / 1000);
+      const mm = String(Math.floor(s / 60)).padStart(2, "0");
+      const ss = String(s % 60).padStart(2, "0");
+      timeDiv.textContent = `開始: ${new Date(startTime).toLocaleTimeString()} | 経過: ${mm}:${ss}`;
+    }, 1000);
     chrome.runtime.sendMessage({ action: "setIcon", recording: true });
   } catch (e) {
     status.textContent = "エラー: " + e.message;
@@ -45,6 +55,7 @@ stopBtn.addEventListener("click", () => {
     recorder.stop();
     stream?.getTracks().forEach(t => t.stop());
   }
+  clearInterval(timerId);
   stopBtn.style.display = "none";
   startBtn.style.display = "block";
   status.textContent = "保存中...";
@@ -59,5 +70,7 @@ function saveFile() {
   a.href = url;
   a.download = `recording-${ts}.ogg`;
   a.click();
+  URL.revokeObjectURL(url);
+  chunks = [];
   status.textContent = "保存しました";
 }
